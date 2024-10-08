@@ -1,0 +1,12 @@
+/* 
+  Localizable.strings
+  FetchRecipes
+
+  Created by Oren Leavitt on 10/7/24.
+  
+*/
+
+"main_title" = "Recipes";
+"loading_text" = "Fetching your recipes...";
+"error_message_unable_to_load" = "Sorry...\nWe are unable to load your recipes.";
+"empty_recipe_list_placeholder" = "Bummer...\nThere are no recipes to show.\nLet's get cooking!";
