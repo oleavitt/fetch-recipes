@@ -31,15 +31,25 @@ struct RecipeRowView: View {
     }
     
     var placeHolderImage: some View {
-        Image(systemName: "list.bullet")
+        Image(systemName: "photo")
             .font(.title)
             .foregroundStyle(.placeholder)
     }
     
+    @ViewBuilder
     var errorImage: some View {
-        Image(systemName: "photo.badge.exclamationmark")
-            .font(.title)
-            .foregroundStyle(.red)
+        if #available(iOS 18, *) {
+            // Show the new system two color photo with red (!) overlay
+            Image(systemName: "photo.badge.exclamationmark")
+                .font(.title)
+                .foregroundStyle(.secondary)
+                .symbolRenderingMode(.multicolor)
+        } else {
+            // Otherwise show the old "photo" image in red
+            Image(systemName: "photo")
+                .font(.title)
+                .foregroundStyle(.red)
+        }
     }
 }
 

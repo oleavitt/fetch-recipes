@@ -43,7 +43,7 @@ class RecipesListViewModel: ObservableObject {
         error = nil
         
         // Uncomment to add a 3 second delay - just to show the loading state
-        try? await Task.sleep(nanoseconds: 1_000_000_000 * 3)
+        // try? await Task.sleep(nanoseconds: 1_000_000_000 * 3)
         
         do {
             recipesList = try await fetcher.getRecipes(endPoint: selectedEndPoint)
@@ -71,20 +71,5 @@ class RecipesListViewModel: ObservableObject {
 #else
         return "error_message_unable_to_load".localized()
 #endif
-    }
-}
-
-private extension RecipesListViewModel {
-    
-    func handleFetchRecipesResponse(recipes: [Recipe], error: Error?) {
-        if let error {
-            self.error = error
-            state = .error
-        } else {
-            if recipes.isEmpty {
-                state = .empty
-            }
-            recipesList = recipes
-        }
     }
 }
