@@ -42,10 +42,10 @@ struct RecipesListView: View {
     
     var recipesView: some View {
         List {
-            ForEach(viewModel.recipeCuisines, id: \.self) { recipe in
-                HStack {
-                    VStack {
-                        Text(recipe)
+            ForEach(viewModel.recipeCuisines, id: \.self) { cuisine in
+                Section(cuisine) {
+                    ForEach(viewModel.recipesFor(cuisine: cuisine), id: \.self) { recipe in
+                        RecipeRowView(recipe: recipe)
                     }
                 }
             }
