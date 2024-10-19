@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Recipe: Codable {
+struct Recipe: Decodable {
     let uuid: UUID
     let cuisine: String
     let name: String
@@ -22,5 +22,11 @@ struct Recipe: Codable {
         case sourceUrl = "source_url"
         case videoUrl = "youtube_url"
         case uuid, cuisine, name
+    }
+}
+
+extension Recipe: Hashable {
+    var id: UUID {
+        uuid
     }
 }

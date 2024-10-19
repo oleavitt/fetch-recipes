@@ -9,19 +9,49 @@ import Foundation
 
 class RecipesListViewModel: ObservableObject {
     
-    enum State {
-        case loading, empty, foooood, error
-    }
+    private let fetcher: RecipesFetcher
 
     @Published var state: State = .empty
-    @Published var recipes: [Recipes] = []
+    @Published var recipesList: [Recipe] = []
+    
+    enum State {
+        case loading, loaded, empty, error
+    }
     
     private var error: Error?
     
-    init() {
-        
+    var selectedEndPoint: RecipesEndPoint = .allRecipes
+    
+    init(fetcher: RecipesFetcher) {
+        self.fetcher = fetcher
     }
 
+    var recipeCuisines: [String] {
+        Set(recipesList.map {
+            $0.cuisine
+        }).sorted()
+    }
+    
+    func recipesFor(cuisine: String) -> [Recipe] {
+        recipesList.filter { $0.cuisine == cuisine }
+            .sorted { $0.name < $1.name }
+    }
+    
+    @MainActor
+    func fetchRecipes() async {
+        error = nil
+        state = .loading
+        do {
+            recipesList = try await fetcher.getRecipes(endPoint: selectedEndPoint)
+            state = recipesList.isEmpty ? .empty : .loaded
+            print("fetchRecipes(): Received \(recipesList.count) recipes")
+        } catch {
+            print("fetchRecipes(): \(error.localizedDescription)")
+            self.error = error
+            state = .error
+        }
+    }
+    
     var errorMessage: String {
         guard let error else { return "" }
 #if DEBUG
@@ -30,5 +60,20 @@ class RecipesListViewModel: ObservableObject {
 #else
         return "error_message_unable_to_load".localized()
 #endif
+    }
+}
+
+private extension RecipesListViewModel {
+    
+    func handleFetchRecipesResponse(recipes: [Recipe], error: Error?) {
+        if let error {
+            self.error = error
+            state = .error
+        } else {
+            if recipes.isEmpty {
+                state = .empty
+            }
+            recipesList = recipes
+        }
     }
 }

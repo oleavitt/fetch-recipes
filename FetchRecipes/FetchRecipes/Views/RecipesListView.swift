@@ -9,7 +9,7 @@ import SwiftUI
 
 struct RecipesListView: View {
     
-    @StateObject var viewModel = RecipesListViewModel()
+    @StateObject var viewModel = RecipesListViewModel(fetcher: NetworkRecipesFetcher())
     
     var body: some View {
         NavigationStack {
@@ -19,24 +19,47 @@ struct RecipesListView: View {
                     noRecipesView
                 case .loading:
                     ProgressView("loading_text")
-                case .foooood:
-                    Text("Recipes!")
+                case .loaded:
+                    recipesView
                 case .error:
                     errorView
                 }
             }
             .navigationTitle("main_title".localized())
+            .task {
+                await viewModel.fetchRecipes()
+            }
         }
     }
     
     var noRecipesView: some View {
-        Text("empty_recipe_list_placeholder".localized())
-            .multilineTextAlignment(.center)
-            .font(.title3)
+        List {
+            Text("empty_recipe_list_placeholder".localized())
+                .multilineTextAlignment(.center)
+                .font(.title3)
+        }
+    }
+    
+    var recipesView: some View {
+        List {
+            ForEach(viewModel.recipeCuisines, id: \.self) { recipe in
+                HStack {
+                    VStack {
+                        Text(recipe)
+                    }
+                }
+            }
+        }
     }
     
     var errorView: some View {
-        Text(viewModel.errorMessage)
+        List {
+            HStack(alignment: .top) {
+                Image(systemName: "xmark.circle.fill")
+                    .foregroundColor(.red)
+                Text(viewModel.errorMessage)
+            }
+        }
     }
 }
 
