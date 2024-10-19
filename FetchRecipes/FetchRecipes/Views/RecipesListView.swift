@@ -26,9 +26,8 @@ struct RecipesListView: View {
                 }
             }
             .navigationTitle("main_title".localized())
-            .task {
-                await viewModel.fetchRecipes()
-            }
+            .task(viewModel.loadRecipes)
+            .refreshable(action: viewModel.fetchRecipes)
         }
     }
     

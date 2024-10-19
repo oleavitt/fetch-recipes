@@ -37,10 +37,14 @@ class RecipesListViewModel: ObservableObject {
             .sorted { $0.name < $1.name }
     }
     
+    @Sendable
     @MainActor
     func fetchRecipes() async {
         error = nil
-        state = .loading
+        
+        // Uncomment to add a 3 second delay - just to show the loading state
+        try? await Task.sleep(nanoseconds: 1_000_000_000 * 3)
+        
         do {
             recipesList = try await fetcher.getRecipes(endPoint: selectedEndPoint)
             state = recipesList.isEmpty ? .empty : .loaded
@@ -50,6 +54,13 @@ class RecipesListViewModel: ObservableObject {
             self.error = error
             state = .error
         }
+    }
+    
+    @Sendable
+    @MainActor
+    func loadRecipes() async {
+        state = .loading
+        await fetchRecipes()
     }
     
     var errorMessage: String {
