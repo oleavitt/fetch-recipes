@@ -78,9 +78,6 @@ private class ImageLoader: ObservableObject {
         phase = .empty
 
         guard let url else {
-            withAnimation(animation) {
-                phase = .failure(URLError(.badURL))
-            }
             return
         }
 
